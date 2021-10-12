@@ -7,7 +7,6 @@ from PIL import Image
 import pytesseract
 from tensorflow.keras.models import load_model
 import os
-import matplotlib.pyplot as plt
 
 #declared an empty variable for reassignment
 
@@ -40,19 +39,19 @@ def contours(img255,img):
         x,y,w,h = cv2.boundingRect(contour)
         
         if len(approx)>=4 and len(approx)<=8:
-            #cv2.imshow('origibal_img',origibal_img)
+            
             license_img = origibal_img[y:y+h,x:x+w]
             custom_config = r'--oem 3 --psm 6 outputbase digits'
             text = pytesseract.image_to_string(license_img,config=custom_config)
             area = w*h
-            #print('area : ',area)
+          
             x = text.split("-")
             
             if x is None:
                 continue
             else:
                 if len(x)==5:
-                    #cv2.imwrite('D:/Project/ImageNew/Test_gray4.jpg', license_img) 
+          
                     if len(x[0]) > 2:
                         x_re=x[0]
                         removed = x[0].replace(x_re[0], "")
@@ -64,10 +63,7 @@ def contours(img255,img):
                         removed = x[len(x)-1].replace(re, "")
                         text=text.replace(x_re,removed)
                         
-                    #cv2.drawContours(img,[contour],-1,(255,0,255),3)
-                    #dim=(600,800)
-                    #img = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
-                    #cv2.imshow('contours',img)
+                   
                     return text
                 else:
                     continue
@@ -77,16 +73,16 @@ def contours(img255,img):
         
 response = ''
 
-#creating the instance of our flask application
+
 app = Flask(__name__)
 
-#route to entertain our post and get request from flutter app
+
 @app.route('/name', methods = ['GET', 'POST'])
 def nameRoute():
 
-    #fetching the global response variable to manipulate inside the function
+    
     global response
-    #checking the request type we get from the app
+   
     if(request.method == 'POST'):
         request_data = request.data #getting the response data
         request_data = json.loads(request_data.decode('utf-8')) #converting it from json to key value pair
@@ -103,7 +99,7 @@ def nameRoute():
             res=shadowExtraction(img)
             gray = cv2.cvtColor(res, cv2.COLOR_BGR2GRAY)
             th2 = cv2.threshold(gray,0,1,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)[1]
-            #cv2.imshow('res ',th2*255)
+            
             img255=th2*255
             img_contours=contours(img255,img)
             img_contours=img_contours.split()
