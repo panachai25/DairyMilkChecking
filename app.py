@@ -8,8 +8,6 @@ import pytesseract
 from tensorflow.keras.models import load_model
 import os
 
-#declared an empty variable for reassignment
-
 def shadowExtraction(img):
     bgr_planes = cv2.split(img)
     res_md = []
@@ -17,9 +15,7 @@ def shadowExtraction(img):
     for plane in bgr_planes:
         dilated_img = cv2.dilate(plane, np.ones((7, 7), np.uint8))
         bg_img = cv2.medianBlur(dilated_img, 21)
-        #cv2.imshow('bg_img ',bg_img)
         diff_img = 255-cv2.absdiff(plane, bg_img)
-        #cv2.imshow('diff_img ',diff_img)
         res_md.append(bg_img)
         result_planes.append(diff_img)
     result = cv2.merge(result_planes)
@@ -30,7 +26,6 @@ def contours(img255,img):
     img255_copy=img255.copy()
     origibal_img = img.copy()
     contours, hierarchy=cv2.findContours(img255_copy,cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    #cv2.drawContours(img,contours,-1,(0,255,255),3)
     contours = sorted(contours,key=cv2.contourArea,reverse=True)[:8]
     
     for contour in contours:
@@ -62,8 +57,6 @@ def contours(img255,img):
                         re = x[len(x)-1][4]
                         removed = x[len(x)-1].replace(re, "")
                         text=text.replace(x_re,removed)
-                        
-                   
                     return text
                 else:
                     continue
@@ -84,9 +77,9 @@ def nameRoute():
     global response
    
     if(request.method == 'POST'):
-        request_data = request.data #getting the response data
-        request_data = json.loads(request_data.decode('utf-8')) #converting it from json to key value pair
-        name = request_data['name']#assigning it to name
+        request_data = request.data
+        request_data = json.loads(request_data.decode('utf-8')) 
+        name = request_data['name']
         Type = request_data['Type']
         im=base64.b64decode(name)
         f=open('im.jpg','wb')
@@ -113,7 +106,6 @@ def nameRoute():
             img = cv2.resize(img, dim, interpolation = cv2.INTER_NEAREST)
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             out=[]
-            out=[]
             i=0
             correct=[]
             result_pred=[]
@@ -135,9 +127,9 @@ def nameRoute():
             custom_config = r'--oem 3 --psm 6 outputbase digits'
             text = pytesseract.image_to_string(img_opening,config=custom_config)
             output = text
-        return jsonify({'name' : output}) #to avoid a type error 
+        return jsonify({'name' : output}) 
     else:
-        return jsonify({'name' : response}) #sending data back to your frontend app
+        return jsonify({'name' : response})
 
 if __name__ == "__main__":
     app.run()
